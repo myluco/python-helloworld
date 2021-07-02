@@ -1,0 +1,33 @@
+name: Docker Build and Push
+on:
+  push:
+    branches: [master]
+  pull_request:
+    branches: [master]
+
+build:
+  runs-on: ubuntu-latest
+  -
+    name: Checkout
+    uses: actions/checkout@v2
+  -
+    name: Setup QEMU
+    uses: docker/setup-qemu-action@v1
+  -
+    name: Setup Docker Buildx
+    uses: docker/setup-buildx-action@v1
+  -
+    name: Login to DockerHub
+    uses: docker/login-action@v1
+    with:
+      user: ${{ secrets.DOCKERHUB_USERNAME }}
+      password: ${{ secrets.DOCKERHUB_TOKEN }}
+  -
+    name: Build and push
+    uses: docker/build-push-action@v2
+    with:
+      context: .
+      file: ./Dockerfile
+      platforms: linux/amd64
+      push: true
+      tags: {{ YOUR_DOCKERHUB_REPOSITORY }}/python-helloworld:latest
